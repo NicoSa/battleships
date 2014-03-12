@@ -60,13 +60,13 @@ class BattleShipGameServer < EventMachine::Connection
          board_for @game.display_board
        elsif data =~ /opponents board/i
          board_for @game.other_board
-       elsif data =~ /[A-J][1-9]|10/i
-         send_data @game.shoot data.chop
+       elsif data =~ /[A-J]([1-9]|10)/i     
+         send_data @game.shoot(data.chomp)
        else
          send_data "Please specify a shot like [A-J][1-10]"
        end
      elsif data =~ /add_player/i
-       name = data.sub('add_player','').chop.squeeze
+       name = data.sub('add_player','').strip.squeeze(' ')
        puts name.inspect
        name = '' if name == ' '
        player = Player.new name
@@ -100,9 +100,10 @@ end
 abort("Please specify a path where the game files are!") unless ARGV.first
 begin
   loader = GameLoader.new ARGV.first
+  port = ARGV[1] || 8010
   loader.load
   EventMachine.run {
-    EventMachine.start_server("battleships.server", 8010, BattleShipGameServer)
+    EventMachine.start_server(`hostname`.chomp, port, BattleShipGameServer)
   }
 rescue RuntimeError => e
   puts "Could not load the game!"

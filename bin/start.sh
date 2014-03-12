@@ -1,1 +1,1 @@
-ruby server.rb $1
+ruby server.rb $1 $2

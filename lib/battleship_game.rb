@@ -44,10 +44,14 @@ class BattleShipGame
   end
   
   def shoot shot
+    x,y = shot.downcase.split(//)
+    x = x.ord - 'a'.ord
+    y = y.to_i - 1
+    shot = [x,y]
     message = @player.shoot shot, other_board
     puts message
     finished?
-    message << next_turn
+    message += next_turn
     message
   end
 
